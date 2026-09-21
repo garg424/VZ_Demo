@@ -191,7 +191,10 @@ from prov.orders p
 left join act.work_orders a on a.order_no = p.order_no
 left join netinv.circuit_inventory i on i.order_no = p.order_no;
 
-create or replace function public.reset_demo() returns void language plpgsql as $$
+-- SECURITY DEFINER so the bulk reset (which ALTERs sequences it doesn't own as
+-- the anon role) runs with the function owner's privileges.
+create or replace function public.reset_demo() returns void
+  language plpgsql security definer set search_path = public, prov, act, netinv as $$
 begin
   -- WHERE clauses satisfy the "safe update" guard that blocks unqualified DELETEs.
   delete from netinv.circuit_inventory where true;
