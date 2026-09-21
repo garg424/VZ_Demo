@@ -1,4 +1,4 @@
-import { act, audit } from "@/lib/db";
+import { act, prov, audit } from "@/lib/db";
 import { ok, handle, ApiError } from "@/lib/http";
 import { requireUser } from "@/lib/auth";
 import { getWorkOrder, expectStatus } from "@/lib/workorders";
@@ -22,6 +22,14 @@ export async function POST(
       .select("*")
       .single();
     if (error) throw new ApiError("INTERNAL", 500, error.message);
+
+    // Close the originating provisioning order too, so the cross-system trace
+    // reads closed / closed / in_service (TC-X3).
+    const { error: pErr } = await prov
+      .from("orders")
+      .update({ status: "closed" })
+      .eq("order_no", wo.order_no);
+    if (pErr) throw new ApiError("INTERNAL", 500, pErr.message);
 
     await audit(wo.order_no, "activation", "closed", "activated", "closed", user.email);
     return ok(data);

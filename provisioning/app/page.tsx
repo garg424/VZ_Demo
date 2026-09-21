@@ -25,6 +25,7 @@ const STATUSES = [
   "configured",
   "handed_off",
   "test_failed",
+  "closed",
 ];
 
 function Queue() {
