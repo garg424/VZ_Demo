@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VZ Provisioning",
-  description: "Verizon IntelliQA demo — Circuit Provisioning",
+  title: "Corvia Provisioning",
+  description: "Corvia Telecom — Circuit Provisioning",
 };
 
 export default function RootLayout({

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { setUser } from "@/lib/session";
+import { Logo } from "@/components/Logo";
 
 export default function LoginForm({
   appRole,
@@ -59,9 +60,7 @@ export default function LoginForm({
           }}
         />
         <div className="relative flex h-full flex-col justify-between p-12 text-white">
-          <div className="text-2xl font-extrabold lowercase tracking-tight text-white">
-            verizon
-          </div>
+          <Logo wordmarkClassName="text-white" />
           <div>
             <h2 className="max-w-sm text-3xl font-semibold leading-tight">
               Circuit provisioning &amp; activation
@@ -79,9 +78,7 @@ export default function LoginForm({
       <div className="flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-sm">
           <div className="mb-8 lg:hidden">
-            <span className="text-2xl font-extrabold lowercase tracking-tight text-vz-red">
-              verizon
-            </span>
+            <Logo />
           </div>
           <h1 className="text-xl font-semibold text-slate-900">Sign in</h1>
           <p className="mt-1 text-sm text-slate-500">

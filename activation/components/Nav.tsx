@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearUser, getUser } from "@/lib/session";
 import { useEffect, useState } from "react";
+import { Logo } from "@/components/Logo";
 
 const APP_NAME = "Activation";
 const APP_TAG = "Circuit OSS";
@@ -34,9 +36,9 @@ export default function Nav() {
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="container-app flex h-16 items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-xl font-extrabold lowercase tracking-tight text-vz-red">
-            verizon
-          </span>
+          <Link href="/" aria-label={`${APP_NAME} home`} className="rounded-md hover:opacity-80">
+            <Logo />
+          </Link>
           <span className="h-5 w-px bg-slate-200" />
           <div className="leading-tight">
             <div className="text-sm font-semibold text-slate-900">{APP_NAME}</div>

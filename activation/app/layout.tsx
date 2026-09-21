@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VZ Activation",
-  description: "Verizon IntelliQA demo — Circuit Activation",
+  title: "Corvia Activation",
+  description: "Corvia Telecom — Circuit Activation",
 };
 
 export default function RootLayout({
