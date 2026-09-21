@@ -6,15 +6,15 @@ Fill in the bracketed values after creating the Supabase project and deploying t
 
 | App | Local | Deployed |
 |---|---|---|
-| Provisioning | http://localhost:3001 | https://[circuit-provisioning].vercel.app |
-| Activation | http://localhost:3002 | https://[circuit-activation].vercel.app |
+| Provisioning | http://localhost:3001 | https://vz-demo.vercel.app |
+| Activation | http://localhost:3002 | https://vz-demo-activation.vercel.app |
 
 ## OpenAPI specs
 
 | App | URL |
 |---|---|
-| Provisioning | `[PROV-BASE]/api/openapi.json` |
-| Activation | `[ACT-BASE]/api/openapi.json` |
+| Provisioning | https://vz-demo.vercel.app/api/openapi.json |
+| Activation | https://vz-demo-activation.vercel.app/api/openapi.json |
 
 ## Logins (seeded in public.users)
 
@@ -26,10 +26,11 @@ Fill in the bracketed values after creating the Supabase project and deploying t
 ## Postgres — for database assertions (scenario 3)
 
 Use the **session pooler** string (port 5432), not the direct connection.
-Supabase Dashboard → Connect → Session pooler:
+Supabase Dashboard → Connect → Session pooler (project ref `uzgigfqmtgkrfbotvnmv`;
+fill in your DB password and the region shown in the dashboard):
 
 ```
-postgresql://postgres.[REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
+postgresql://postgres.uzgigfqmtgkrfbotvnmv:[DB-PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
 ```
 
 Session mode (5432) supports prepared statements. Avoid transaction mode (6543) for testing.
@@ -37,20 +38,22 @@ Session mode (5432) supports prepared statements. Avoid transaction mode (6543) 
 Smoke test from outside:
 
 ```bash
-psql "postgresql://postgres.[REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres" \
+psql "postgresql://postgres.uzgigfqmtgkrfbotvnmv:[DB-PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres" \
   -c "select * from public.v_cross_system_trace"
 ```
 
 ## Supabase REST — same assertions over HTTP
 
-Base URL: `https://[REF].supabase.co/rest/v1/`
-Anon key: `[ANON-KEY]`
+Base URL: `https://uzgigfqmtgkrfbotvnmv.supabase.co/rest/v1/`
+Anon key: **not committed** — this repo is public and RLS is off, so the anon key
+grants full DB access. Get it from Supabase → Project Settings → API (anon public),
+or from either app's local `.env.local` (`SUPABASE_ANON_KEY`).
 
 Non-public schemas need a profile header:
 
 ```
-GET https://[REF].supabase.co/rest/v1/circuit_inventory?order_no=eq.ORD-1004
-    apikey: [ANON-KEY]
+GET https://uzgigfqmtgkrfbotvnmv.supabase.co/rest/v1/circuit_inventory?order_no=eq.ORD-1004
+    apikey: <anon-key>
     Accept-Profile: netinv
 ```
 
