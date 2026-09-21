@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Nav from "@/components/Nav";
 import RequireAuth from "@/components/RequireAuth";
 import StatusBadge from "@/components/StatusBadge";
@@ -36,6 +37,12 @@ type WorkOrder = {
   tests: Test[];
 };
 
+const RESULT_STYLES: Record<string, string> = {
+  pass: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  fail: "bg-red-50 text-red-700 ring-red-200",
+  pending: "bg-slate-100 text-slate-500 ring-slate-200",
+};
+
 function Detail({ orderNo }: { orderNo: string }) {
   const [wo, setWo] = useState<WorkOrder | null>(null);
   const [toast, setToast] = useState("");
@@ -63,8 +70,14 @@ function Detail({ orderNo }: { orderNo: string }) {
     await load();
   }
 
-  if (loading) return <div data-testid="loading" className="p-6">Loading…</div>;
-  if (!wo) return <div className="p-6">Work order not found.</div>;
+  if (loading)
+    return (
+      <div data-testid="loading" className="grid min-h-screen place-items-center text-sm text-slate-400">
+        Loading…
+      </div>
+    );
+  if (!wo)
+    return <div className="container-app py-10 text-slate-600">Work order not found.</div>;
 
   // Derived by Activation — never typed by a tester.
   const serviceProfile = `${wo.service_type.toUpperCase()}-${wo.bandwidth_mbps}M`;
@@ -72,69 +85,83 @@ function Detail({ orderNo }: { orderNo: string }) {
     wo.tests.length === wo.expected_test_count &&
     wo.tests.length > 0 &&
     wo.tests.every((t) => t.result === "pass");
+  const passCount = wo.tests.filter((t) => t.result === "pass").length;
 
   return (
     <>
       <Nav />
-      <main className="mx-auto max-w-4xl p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <h1 className="font-mono text-xl font-bold">{wo.order_no}</h1>
+      <main className="container-app py-8">
+        <Link href="/" className="text-sm font-medium text-slate-500 hover:text-slate-800">
+          ← Activation queue
+        </Link>
+
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <h1 className="mono text-2xl font-bold text-slate-900">{wo.order_no}</h1>
           <StatusBadge status={wo.status} />
-          <span data-testid="rework-count" className="text-xs text-gray-500">
+          <span
+            data-testid="rework-count"
+            className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500"
+          >
             rework: {wo.rework_count}
           </span>
+          <span className="ml-auto text-sm text-slate-500">{wo.customer_name}</span>
         </div>
 
         {toast && (
-          <div data-testid="toast-message" className="mb-4 rounded border bg-white px-4 py-2 text-sm">
+          <div
+            data-testid="toast-message"
+            className="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-card"
+          >
             {toast}
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-6">
-          <section className="rounded-lg border bg-white p-4">
-            <h2 className="mb-2 font-semibold">Circuit</h2>
-            <dl className="grid grid-cols-2 gap-y-1 text-sm">
-              <dt className="text-gray-500">Circuit ID</dt>
-              <dd data-testid="circuit-id-value" className="font-mono">
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          {/* Circuit */}
+          <section className="card card-pad p-5">
+            <div className="section-title">Circuit</div>
+            <dl className="kv">
+              <dt>Circuit ID</dt>
+              <dd data-testid="circuit-id-value" className="mono">
                 {wo.circuit_id}
               </dd>
-              <dt className="text-gray-500">Service profile</dt>
-              <dd data-testid="service-profile-value" className="font-mono">
+              <dt>Service profile</dt>
+              <dd data-testid="service-profile-value" className="mono">
                 {serviceProfile}
               </dd>
-              <dt className="text-gray-500">Expected tests</dt>
+              <dt>Expected tests</dt>
               <dd data-testid="expected-test-count">{wo.expected_test_count}</dd>
-              <dt className="text-gray-500">Customer</dt>
+              <dt>Customer</dt>
               <dd data-testid="customer-name-value">{wo.customer_name}</dd>
-              <dt className="text-gray-500">Account</dt>
+              <dt>Account</dt>
               <dd>{wo.account_no}</dd>
-              <dt className="text-gray-500">Service</dt>
-              <dd>{wo.service_type}</dd>
-              <dt className="text-gray-500">Bandwidth</dt>
+              <dt>Service</dt>
+              <dd className="capitalize">{wo.service_type.replace("_", " ")}</dd>
+              <dt>Bandwidth</dt>
               <dd>{wo.bandwidth_mbps} Mbps</dd>
-              <dt className="text-gray-500">A-end</dt>
+              <dt>A-end</dt>
               <dd>{wo.a_end_address}</dd>
-              <dt className="text-gray-500">Z-end</dt>
+              <dt>Z-end</dt>
               <dd>{wo.z_end_address}</dd>
             </dl>
           </section>
 
-          <section className="rounded-lg border bg-white p-4">
-            <h2 className="mb-2 font-semibold">Progress</h2>
-            <dl className="grid grid-cols-2 gap-y-1 text-sm">
-              <dt className="text-gray-500">Received</dt>
+          {/* Progress */}
+          <section className="card card-pad p-5">
+            <div className="section-title">Progress</div>
+            <dl className="kv">
+              <dt>Received</dt>
               <dd>{new Date(wo.received_at).toLocaleString()}</dd>
-              <dt className="text-gray-500">Assigned to</dt>
+              <dt>Assigned to</dt>
               <dd>{wo.assigned_to ?? "—"}</dd>
-              <dt className="text-gray-500">Activated</dt>
+              <dt>Activated</dt>
               <dd>{wo.activated_at ? new Date(wo.activated_at).toLocaleString() : "—"}</dd>
-              <dt className="text-gray-500">Closed</dt>
+              <dt>Closed</dt>
               <dd>{wo.closed_at ? new Date(wo.closed_at).toLocaleString() : "—"}</dd>
             </dl>
             {wo.failure_reason && (
-              <div className="mt-3 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800">
-                Failure: {wo.failure_reason}
+              <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                <span className="font-semibold">Failure:</span> {wo.failure_reason}
               </div>
             )}
           </section>
@@ -142,31 +169,42 @@ function Detail({ orderNo }: { orderNo: string }) {
 
         {/* Test panel */}
         {wo.tests.length > 0 && (
-          <section className="mt-6 rounded-lg border bg-white p-4">
-            <h2 className="mb-2 font-semibold">Tests</h2>
-            <table className="w-full text-sm">
+          <section className="mt-6 card overflow-hidden">
+            <div className="flex items-center justify-between px-5 pt-5">
+              <div className="section-title mb-0">Acceptance tests</div>
+              <div className="text-xs font-medium text-slate-400">
+                {passCount}/{wo.expected_test_count} passed
+              </div>
+            </div>
+            <table className="table mt-3">
               <thead>
-                <tr className="border-b text-left">
-                  <th className="p-2">#</th>
-                  <th className="p-2">Test</th>
-                  <th className="p-2">Threshold</th>
-                  <th className="p-2">Result</th>
-                  <th className="p-2">Measured</th>
-                  <th className="p-2">Action</th>
+                <tr>
+                  <th className="w-10">#</th>
+                  <th>Test</th>
+                  <th>Threshold</th>
+                  <th>Result</th>
+                  <th>Measured</th>
+                  <th className="text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {wo.tests.map((t) => (
-                  <tr key={t.seq} data-testid={`test-row-${t.seq}`} className="border-b">
-                    <td className="p-2">{t.seq}</td>
-                    <td className="p-2">{t.test_name}</td>
-                    <td className="p-2 text-gray-500">{t.threshold}</td>
-                    <td className="p-2">
-                      <span data-testid={`test-row-${t.seq}-result`} data-result={t.result}>
+                  <tr key={t.seq} data-testid={`test-row-${t.seq}`}>
+                    <td className="text-slate-400">{t.seq}</td>
+                    <td className="font-medium text-slate-900">{t.test_name}</td>
+                    <td className="mono text-slate-500">{t.threshold}</td>
+                    <td>
+                      <span
+                        data-testid={`test-row-${t.seq}-result`}
+                        data-result={t.result}
+                        className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ring-1 ring-inset ${
+                          RESULT_STYLES[t.result] ?? RESULT_STYLES.pending
+                        }`}
+                      >
                         {t.result}
                       </span>
                     </td>
-                    <td className="p-2">
+                    <td>
                       {wo.status === "testing" && t.result === "pending" ? (
                         <input
                           data-testid={`test-row-${t.seq}-value-input`}
@@ -175,15 +213,15 @@ function Detail({ orderNo }: { orderNo: string }) {
                             setValues((v) => ({ ...v, [t.seq]: e.target.value }))
                           }
                           placeholder="measured"
-                          className="w-28 rounded border px-2 py-0.5"
+                          className="input w-32 py-1 text-xs"
                         />
                       ) : (
-                        t.measured_value ?? "—"
+                        <span className="mono text-slate-500">{t.measured_value ?? "—"}</span>
                       )}
                     </td>
-                    <td className="p-2">
+                    <td className="text-right">
                       {wo.status === "testing" && t.result === "pending" && (
-                        <span className="flex gap-2">
+                        <span className="inline-flex gap-2">
                           <button
                             data-testid={`test-row-${t.seq}-pass-btn`}
                             onClick={() =>
@@ -193,7 +231,7 @@ function Detail({ orderNo }: { orderNo: string }) {
                                 `Test ${t.seq} pass`
                               )
                             }
-                            className="rounded bg-green-700 px-2 py-0.5 text-xs font-semibold text-white"
+                            className="btn btn-success btn-sm"
                           >
                             Pass
                           </button>
@@ -206,7 +244,7 @@ function Detail({ orderNo }: { orderNo: string }) {
                                 `Test ${t.seq} fail`
                               )
                             }
-                            className="rounded bg-red-700 px-2 py-0.5 text-xs font-semibold text-white"
+                            className="btn btn-danger btn-sm"
                           >
                             Fail
                           </button>
@@ -221,14 +259,14 @@ function Detail({ orderNo }: { orderNo: string }) {
         )}
 
         {/* Actions */}
-        <section className="mt-6 rounded-lg border bg-white p-4">
-          <h2 className="mb-3 font-semibold">Actions</h2>
+        <section className="mt-6 card card-pad p-5">
+          <div className="section-title">Actions</div>
           <div className="flex flex-wrap items-center gap-3">
             {wo.status === "ready_for_activation" && (
               <button
                 data-testid="pickup-btn"
                 onClick={() => act(`/api/orders/${orderNo}/pickup`, undefined, "Picked up")}
-                className="rounded bg-vz-red px-4 py-2 font-semibold text-white"
+                className="btn btn-primary"
               >
                 Pick up
               </button>
@@ -240,23 +278,33 @@ function Detail({ orderNo }: { orderNo: string }) {
                   data-testid="activate-btn"
                   disabled={!allPass}
                   onClick={() => act(`/api/orders/${orderNo}/activate`, undefined, "Activated")}
-                  className="rounded bg-vz-red px-4 py-2 font-semibold text-white disabled:opacity-50"
+                  className="btn btn-primary"
                 >
                   Activate
                 </button>
+                {!allPass && (
+                  <span className="text-xs text-slate-400">
+                    All {wo.expected_test_count} tests must pass to activate.
+                  </span>
+                )}
+                <span className="mx-1 h-6 w-px bg-slate-200" />
                 <input
                   data-testid="failure-reason-input"
                   placeholder="Return reason"
                   value={failReason}
                   onChange={(e) => setFailReason(e.target.value)}
-                  className="rounded border px-3 py-2 text-sm"
+                  className="input w-48"
                 />
                 <button
                   data-testid="return-btn"
                   onClick={() =>
-                    act(`/api/orders/${orderNo}/return`, { failure_reason: failReason }, "Returned to provisioning")
+                    act(
+                      `/api/orders/${orderNo}/return`,
+                      { failure_reason: failReason },
+                      "Returned to provisioning"
+                    )
                   }
-                  className="rounded bg-amber-600 px-4 py-2 font-semibold text-white"
+                  className="btn btn-warn"
                 >
                   Return to provisioning
                 </button>
@@ -267,19 +315,19 @@ function Detail({ orderNo }: { orderNo: string }) {
               <button
                 data-testid="close-order-btn"
                 onClick={() => act(`/api/orders/${orderNo}/close`, undefined, "Closed")}
-                className="rounded bg-vz-red px-4 py-2 font-semibold text-white"
+                className="btn btn-primary"
               >
                 Close order
               </button>
             )}
 
             {wo.status === "closed" && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-slate-500">
                 Order closed. Circuit published to network inventory.
               </span>
             )}
             {wo.status === "test_failed" && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-slate-500">
                 Returned to Provisioning for rework.
               </span>
             )}

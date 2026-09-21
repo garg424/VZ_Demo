@@ -10,9 +10,36 @@ const config: Config = {
       colors: {
         vz: {
           red: "#ee0000",
-          dark: "#000000",
-          gray: "#f6f6f6",
+          redDark: "#cd0000",
+          black: "#0b0b0c",
+          gray: "#f4f5f7",
         },
+      },
+      fontFamily: {
+        sans: [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+        mono: [
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Consolas",
+          "monospace",
+        ],
+      },
+      boxShadow: {
+        card: "0 1px 2px 0 rgb(16 24 40 / 0.04), 0 1px 3px 0 rgb(16 24 40 / 0.08)",
+        pop: "0 8px 24px -6px rgb(16 24 40 / 0.16)",
+      },
+      borderRadius: {
+        xl: "0.75rem",
+        "2xl": "1rem",
       },
     },
   },

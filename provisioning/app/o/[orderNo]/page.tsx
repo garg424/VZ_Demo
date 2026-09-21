@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Nav from "@/components/Nav";
 import RequireAuth from "@/components/RequireAuth";
 import StatusBadge from "@/components/StatusBadge";
@@ -78,28 +79,42 @@ function Detail({ orderNo }: { orderNo: string }) {
     await load();
   }
 
-  if (loading) return <div data-testid="loading" className="p-6">Loading…</div>;
-  if (!order) return <div className="p-6">Order not found.</div>;
+  if (loading)
+    return (
+      <div data-testid="loading" className="grid min-h-screen place-items-center text-sm text-slate-400">
+        Loading…
+      </div>
+    );
+  if (!order)
+    return <div className="container-app py-10 text-slate-600">Order not found.</div>;
 
-  const allTasksDone =
-    order.tasks.length > 0 && order.tasks.every((t) => t.done);
+  const allTasksDone = order.tasks.length > 0 && order.tasks.every((t) => t.done);
+  const doneCount = order.tasks.filter((t) => t.done).length;
 
   return (
     <>
       <Nav />
-      <main className="mx-auto max-w-4xl p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <h1 className="font-mono text-xl font-bold">{order.order_no}</h1>
+      <main className="container-app py-8">
+        <Link href="/" className="text-sm font-medium text-slate-500 hover:text-slate-800">
+          ← Order queue
+        </Link>
+
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <h1 className="mono text-2xl font-bold text-slate-900">{order.order_no}</h1>
           <StatusBadge status={order.status} />
-          <span data-testid="rework-count" className="text-xs text-gray-500">
+          <span
+            data-testid="rework-count"
+            className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500"
+          >
             rework: {order.rework_count}
           </span>
+          <span className="ml-auto text-sm text-slate-500">{order.customer_name}</span>
         </div>
 
         {toast && (
           <div
             data-testid="toast-message"
-            className="mb-4 rounded border border-gray-300 bg-white px-4 py-2 text-sm"
+            className="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-card"
           >
             {toast}
           </div>
@@ -108,70 +123,91 @@ function Detail({ orderNo }: { orderNo: string }) {
         {order.status === "test_failed" && order.failure_reason && (
           <div
             data-testid="failure-reason-value"
-            className="mb-4 rounded border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-800"
+            className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
           >
-            Returned from Activation: {order.failure_reason}
+            <span className="font-semibold">Returned from Activation:</span>{" "}
+            {order.failure_reason}
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
           {/* Order facts */}
-          <section className="rounded-lg border bg-white p-4">
-            <h2 className="mb-2 font-semibold">Order</h2>
-            <dl className="grid grid-cols-2 gap-y-1 text-sm">
-              <dt className="text-gray-500">Customer</dt>
+          <section className="card card-pad p-5">
+            <div className="section-title">Order details</div>
+            <dl className="kv">
+              <dt>Customer</dt>
               <dd data-testid="customer-name-value">{order.customer_name}</dd>
-              <dt className="text-gray-500">Account</dt>
+              <dt>Account</dt>
               <dd>{order.account_no}</dd>
-              <dt className="text-gray-500">Service</dt>
-              <dd>{order.service_type}</dd>
-              <dt className="text-gray-500">Bandwidth</dt>
+              <dt>Service</dt>
+              <dd className="capitalize">{order.service_type.replace("_", " ")}</dd>
+              <dt>Bandwidth</dt>
               <dd>{order.bandwidth_mbps} Mbps</dd>
-              <dt className="text-gray-500">A-end</dt>
+              <dt>A-end</dt>
               <dd>{order.a_end_address}</dd>
-              <dt className="text-gray-500">Z-end</dt>
+              <dt>Z-end</dt>
               <dd>{order.z_end_address}</dd>
-              <dt className="text-gray-500">Priority</dt>
-              <dd>{order.priority}</dd>
-              <dt className="text-gray-500">FOC date</dt>
+              <dt>Priority</dt>
+              <dd className="capitalize">{order.priority}</dd>
+              <dt>FOC date</dt>
               <dd>{order.foc_date}</dd>
-              <dt className="text-gray-500">Field dispatch</dt>
-              <dd>{order.needs_field_dispatch ? "yes" : "no"}</dd>
+              <dt>Field dispatch</dt>
+              <dd>{order.needs_field_dispatch ? "Required" : "Not required"}</dd>
             </dl>
           </section>
 
           {/* Design panel */}
-          <section className="rounded-lg border bg-white p-4">
-            <h2 className="mb-2 font-semibold">Design</h2>
-            <dl className="grid grid-cols-2 gap-y-1 text-sm">
-              <dt className="text-gray-500">Circuit ID</dt>
-              <dd data-testid="circuit-id-value" className="font-mono">
+          <section className="card card-pad p-5">
+            <div className="section-title">Design &amp; assignment</div>
+            <dl className="kv">
+              <dt>Circuit ID</dt>
+              <dd data-testid="circuit-id-value" className="mono">
                 {order.circuit_id ?? "—"}
               </dd>
-              <dt className="text-gray-500">VLAN</dt>
+              <dt>VLAN</dt>
               <dd>{order.vlan_id ?? "—"}</dd>
-              <dt className="text-gray-500">Port</dt>
-              <dd>{order.port_assignment ?? "—"}</dd>
-              <dt className="text-gray-500">CFA</dt>
-              <dd>{order.cfa ?? "—"}</dd>
+              <dt>Port</dt>
+              <dd className="mono">{order.port_assignment ?? "—"}</dd>
+              <dt>CFA</dt>
+              <dd className="mono">{order.cfa ?? "—"}</dd>
             </dl>
+            {!order.circuit_id && (
+              <p className="mt-4 text-xs text-slate-400">
+                Circuit ID, VLAN, port and CFA are assigned during design.
+              </p>
+            )}
           </section>
         </div>
 
         {/* Task checklist */}
         {order.tasks.length > 0 && (
-          <section className="mt-6 rounded-lg border bg-white p-4">
-            <h2 className="mb-2 font-semibold">Provisioning tasks</h2>
-            <ul className="space-y-1 text-sm">
+          <section className="mt-6 card card-pad p-5">
+            <div className="flex items-center justify-between">
+              <div className="section-title mb-0">Provisioning tasks</div>
+              <div className="text-xs font-medium text-slate-400">
+                {doneCount}/{order.tasks.length} complete
+              </div>
+            </div>
+            <ul className="mt-3 divide-y divide-slate-100">
               {order.tasks.map((t) => (
                 <li
                   key={t.seq}
                   data-testid={`task-row-${t.seq}`}
-                  className="flex items-center justify-between border-b py-1"
+                  className="flex items-center justify-between py-2.5"
                 >
-                  <span>
-                    {t.seq}. {t.title}{" "}
-                    {t.done && <span className="text-green-700">✓</span>}
+                  <span className="flex items-center gap-3 text-sm">
+                    <span
+                      className={`grid h-5 w-5 place-items-center rounded-full text-[11px] font-bold ${
+                        t.done
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-slate-100 text-slate-400"
+                      }`}
+                    >
+                      {t.done ? "✓" : t.seq}
+                    </span>
+                    <span className={t.done ? "text-slate-500 line-through" : "text-slate-800"}>
+                      {t.title}
+                    </span>
                   </span>
                   {!t.done && order.status === "in_design" && (
                     <button
@@ -183,7 +219,7 @@ function Detail({ orderNo }: { orderNo: string }) {
                           `Task ${t.seq} complete`
                         )
                       }
-                      className="rounded bg-gray-800 px-2 py-0.5 text-xs font-semibold text-white"
+                      className="btn btn-secondary btn-sm"
                     >
                       Complete
                     </button>
@@ -195,8 +231,8 @@ function Detail({ orderNo }: { orderNo: string }) {
         )}
 
         {/* Actions */}
-        <section className="mt-6 rounded-lg border bg-white p-4">
-          <h2 className="mb-3 font-semibold">Actions</h2>
+        <section className="mt-6 card card-pad p-5">
+          <div className="section-title">Actions</div>
           <div className="flex flex-wrap items-center gap-3">
             {order.status === "order_received" && (
               <>
@@ -205,23 +241,24 @@ function Detail({ orderNo }: { orderNo: string }) {
                   onClick={() =>
                     act(`/api/orders/${orderNo}/design/start`, undefined, "Design started")
                   }
-                  className="rounded bg-vz-red px-4 py-2 font-semibold text-white"
+                  className="btn btn-primary"
                 >
                   Start design
                 </button>
+                <span className="mx-1 h-6 w-px bg-slate-200" />
                 <input
                   data-testid="hold-reason-input"
                   placeholder="Hold reason"
                   value={holdReason}
                   onChange={(e) => setHoldReason(e.target.value)}
-                  className="rounded border px-3 py-2 text-sm"
+                  className="input w-48"
                 />
                 <button
                   data-testid="hold-btn"
                   onClick={() =>
                     act(`/api/orders/${orderNo}/hold`, { hold_reason: holdReason }, "On hold")
                   }
-                  className="rounded bg-amber-600 px-4 py-2 font-semibold text-white"
+                  className="btn btn-warn"
                 >
                   Place on hold
                 </button>
@@ -234,7 +271,7 @@ function Detail({ orderNo }: { orderNo: string }) {
                 onClick={() =>
                   act(`/api/orders/${orderNo}/design/start`, undefined, "Design started")
                 }
-                className="rounded bg-vz-red px-4 py-2 font-semibold text-white"
+                className="btn btn-primary"
               >
                 Resume — start design
               </button>
@@ -246,7 +283,7 @@ function Detail({ orderNo }: { orderNo: string }) {
                 onClick={() =>
                   act(`/api/orders/${orderNo}/design/assign`, undefined, "Circuit assigned")
                 }
-                className="rounded bg-vz-red px-4 py-2 font-semibold text-white"
+                className="btn btn-primary"
               >
                 Assign circuit
               </button>
@@ -256,13 +293,16 @@ function Detail({ orderNo }: { orderNo: string }) {
               <button
                 data-testid="configure-btn"
                 disabled={!allTasksDone}
-                onClick={() =>
-                  act(`/api/orders/${orderNo}/configure`, undefined, "Configured")
-                }
-                className="rounded bg-vz-red px-4 py-2 font-semibold text-white disabled:opacity-50"
+                onClick={() => act(`/api/orders/${orderNo}/configure`, undefined, "Configured")}
+                className="btn btn-primary"
               >
                 Mark configured
               </button>
+            )}
+            {order.status === "in_design" && order.circuit_id && !allTasksDone && (
+              <span className="text-xs text-slate-400">
+                Complete all tasks to configure.
+              </span>
             )}
 
             {order.status === "configured" && (
@@ -271,7 +311,7 @@ function Detail({ orderNo }: { orderNo: string }) {
                 onClick={() =>
                   act(`/api/orders/${orderNo}/handoff`, undefined, "Handed off to activation")
                 }
-                className="rounded bg-vz-red px-4 py-2 font-semibold text-white"
+                className="btn btn-primary"
               >
                 Hand off to activation
               </button>
@@ -280,36 +320,44 @@ function Detail({ orderNo }: { orderNo: string }) {
             {order.status === "test_failed" && (
               <button
                 data-testid="rework-btn"
-                onClick={() =>
-                  act(`/api/orders/${orderNo}/rework`, undefined, "Reworked")
-                }
-                className="rounded bg-vz-red px-4 py-2 font-semibold text-white"
+                onClick={() => act(`/api/orders/${orderNo}/rework`, undefined, "Reworked")}
+                className="btn btn-primary"
               >
                 Rework
               </button>
             )}
 
             {["handed_off"].includes(order.status) && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-slate-500">
                 Handed off — now owned by Activation.
+              </span>
+            )}
+            {order.status === "closed" && (
+              <span className="text-sm text-slate-500">
+                Order closed — circuit in service.
               </span>
             )}
           </div>
         </section>
 
         {/* Timeline */}
-        <section className="mt-6 rounded-lg border bg-white p-4">
-          <h2 className="mb-2 font-semibold">Lifecycle timeline</h2>
-          <ol data-testid="timeline" className="space-y-1 text-sm">
+        <section className="mt-6 card card-pad p-5">
+          <div className="section-title">Lifecycle timeline</div>
+          <ol data-testid="timeline" className="relative ml-1 border-l border-slate-200">
             {events.map((e) => (
-              <li key={e.step} className="flex gap-3">
-                <span className="w-6 text-gray-400">{e.step}</span>
-                <span className="w-24 text-gray-500">{e.system}</span>
-                <span className="font-medium">{e.action}</span>
-                <span className="text-gray-500">
-                  {e.from_status ? `${e.from_status} → ` : ""}
-                  {e.to_status}
-                </span>
+              <li key={e.step} className="relative pb-4 pl-5 last:pb-0">
+                <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-vz-red" />
+                <div className="flex flex-wrap items-center gap-x-2 text-sm">
+                  <span className="font-medium text-slate-900">{e.action}</span>
+                  <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium capitalize text-slate-500">
+                    {e.system}
+                  </span>
+                  <span className="text-slate-400">
+                    {e.from_status ? `${e.from_status} → ` : ""}
+                    {e.to_status}
+                  </span>
+                </div>
+                <div className="mt-0.5 text-xs text-slate-400">{e.actor}</div>
               </li>
             ))}
           </ol>

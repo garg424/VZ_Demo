@@ -11,29 +11,33 @@ const LABELS: Record<string, string> = {
   closed: "Closed",
 };
 
-const COLORS: Record<string, string> = {
-  order_received: "bg-gray-200 text-gray-800",
-  on_hold: "bg-amber-200 text-amber-900",
-  in_design: "bg-blue-200 text-blue-900",
-  configured: "bg-indigo-200 text-indigo-900",
-  handed_off: "bg-purple-200 text-purple-900",
-  test_failed: "bg-red-200 text-red-900",
-  ready_for_activation: "bg-cyan-200 text-cyan-900",
-  testing: "bg-blue-200 text-blue-900",
-  activated: "bg-green-200 text-green-900",
-  closed: "bg-emerald-300 text-emerald-950",
+// [pill bg + text, dot color]
+const STYLES: Record<string, [string, string]> = {
+  order_received: ["bg-slate-100 text-slate-700 ring-slate-200", "bg-slate-400"],
+  on_hold: ["bg-amber-50 text-amber-700 ring-amber-200", "bg-amber-500"],
+  in_design: ["bg-blue-50 text-blue-700 ring-blue-200", "bg-blue-500"],
+  configured: ["bg-indigo-50 text-indigo-700 ring-indigo-200", "bg-indigo-500"],
+  handed_off: ["bg-violet-50 text-violet-700 ring-violet-200", "bg-violet-500"],
+  test_failed: ["bg-red-50 text-red-700 ring-red-200", "bg-red-500"],
+  ready_for_activation: ["bg-cyan-50 text-cyan-700 ring-cyan-200", "bg-cyan-500"],
+  testing: ["bg-blue-50 text-blue-700 ring-blue-200", "bg-blue-500"],
+  activated: ["bg-emerald-50 text-emerald-700 ring-emerald-200", "bg-emerald-500"],
+  closed: ["bg-emerald-600/10 text-emerald-800 ring-emerald-300", "bg-emerald-600"],
 };
 
 // Badge exposes the raw status on data-status; label text is cosmetic.
 export default function StatusBadge({ status }: { status: string }) {
+  const [pill, dot] = STYLES[status] ?? [
+    "bg-slate-100 text-slate-700 ring-slate-200",
+    "bg-slate-400",
+  ];
   return (
     <span
       data-testid="status-badge"
       data-status={status}
-      className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
-        COLORS[status] ?? "bg-gray-200 text-gray-800"
-      }`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${pill}`}
     >
+      <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
       {LABELS[status] ?? status}
     </span>
   );

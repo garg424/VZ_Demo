@@ -17,6 +17,14 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
     }
   }, [router]);
 
-  if (!ready) return <div data-testid="loading">Loading…</div>;
+  if (!ready)
+    return (
+      <div
+        data-testid="loading"
+        className="grid min-h-screen place-items-center text-sm font-medium text-slate-400"
+      >
+        Loading…
+      </div>
+    );
   return <>{children}</>;
 }

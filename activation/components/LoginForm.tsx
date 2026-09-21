@@ -48,51 +48,99 @@ export default function LoginForm({
   }
 
   return (
-    <div className="mx-auto mt-24 max-w-sm rounded-lg border bg-white p-8 shadow-sm">
-      <div className="mb-1 text-2xl font-extrabold text-vz-red">verizon</div>
-      <h1 className="mb-6 text-sm font-semibold uppercase tracking-wide text-gray-500">
-        {appName}
-      </h1>
-      <form onSubmit={submit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input
-            data-testid="login-email-input"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded border px-3 py-2"
-            autoComplete="username"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Password</label>
-          <input
-            data-testid="login-password-input"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded border px-3 py-2"
-            autoComplete="current-password"
-          />
-        </div>
-        {error && (
-          <div data-testid="login-error" className="text-sm font-medium text-red-600">
-            {error}
+    <div className="grid min-h-screen lg:grid-cols-2">
+      {/* Brand panel */}
+      <div className="relative hidden overflow-hidden bg-vz-black lg:block">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(40rem 40rem at 20% 10%, rgba(238,0,0,0.35), transparent 55%), radial-gradient(30rem 30rem at 90% 90%, rgba(238,0,0,0.20), transparent 60%)",
+          }}
+        />
+        <div className="relative flex h-full flex-col justify-between p-12 text-white">
+          <div className="text-2xl font-extrabold lowercase tracking-tight text-white">
+            verizon
           </div>
-        )}
-        <button
-          data-testid="login-submit-btn"
-          type="submit"
-          disabled={busy}
-          className="w-full rounded bg-vz-red px-4 py-2 font-semibold text-white disabled:opacity-60"
-        >
-          Sign in
-        </button>
-      </form>
-      <p className="mt-4 text-xs text-gray-400">
-        Demo logins: prov@demo.io / act@demo.io — password Demo@1234
-      </p>
+          <div>
+            <h2 className="max-w-sm text-3xl font-semibold leading-tight">
+              Circuit provisioning &amp; activation
+            </h2>
+            <p className="mt-3 max-w-sm text-sm text-white/60">
+              Order-to-activation lifecycle across provisioning, activation, and
+              network inventory systems.
+            </p>
+          </div>
+          <div className="text-xs text-white/40">Internal demo environment</div>
+        </div>
+      </div>
+
+      {/* Form panel */}
+      <div className="flex items-center justify-center px-6 py-16">
+        <div className="w-full max-w-sm">
+          <div className="mb-8 lg:hidden">
+            <span className="text-2xl font-extrabold lowercase tracking-tight text-vz-red">
+              verizon
+            </span>
+          </div>
+          <h1 className="text-xl font-semibold text-slate-900">Sign in</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {appName} console · {appRole} access
+          </p>
+
+          <form onSubmit={submit} className="mt-8 space-y-4">
+            <div>
+              <label className="label">Email</label>
+              <input
+                data-testid="login-email-input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input"
+                autoComplete="username"
+                placeholder="you@demo.io"
+              />
+            </div>
+            <div>
+              <label className="label">Password</label>
+              <input
+                data-testid="login-password-input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input"
+                autoComplete="current-password"
+                placeholder="••••••••"
+              />
+            </div>
+            {error && (
+              <div
+                data-testid="login-error"
+                className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
+              >
+                {error}
+              </div>
+            )}
+            <button
+              data-testid="login-submit-btn"
+              type="submit"
+              disabled={busy}
+              className="btn btn-primary w-full"
+            >
+              {busy ? "Signing in…" : "Sign in"}
+            </button>
+          </form>
+
+          <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
+            <div className="font-semibold text-slate-600">Demo credentials</div>
+            <div className="mt-1">
+              <span className="mono">prov@demo.io</span> ·{" "}
+              <span className="mono">act@demo.io</span> — password{" "}
+              <span className="mono">Demo@1234</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
