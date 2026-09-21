@@ -1,0 +1,7 @@
+customer_name,service_type,bandwidth_mbps,priority,expected_dispatch,expected_tasks,expected_tests,expected_profile,expected_inventory
+Northwind Logistics,ethernet,100,standard,false,4,3,ETHERNET-100M,in_service
+Cascade Health,dia,500,expedited,false,4,3,DIA-500M,in_service
+Halcyon Media,private_line,1000,standard,true,5,4,PRIVATE_LINE-1000M,in_service
+Ferrite Manufacturing,mpls,200,critical,true,5,3,MPLS-200M,in_service
+Solstice Retail,ethernet,1000,standard,true,5,4,ETHERNET-1000M,in_service
+Kestrel Financial,dia,10000,expedited,true,5,4,DIA-10000M,in_service

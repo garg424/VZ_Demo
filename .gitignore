@@ -1,0 +1,17 @@
+# dependencies & builds (also ignored per-app)
+node_modules/
+.next/
+out/
+build/
+
+# env
+.env
+.env*.local
+
+# misc
+.DS_Store
+*.tsbuildinfo
+*.log
+
+# claude code local settings
+.claude/settings.local.json
