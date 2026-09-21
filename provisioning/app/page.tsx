@@ -56,20 +56,46 @@ function Queue() {
     <>
       <Nav />
       <main className="container-app py-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-              Order queue
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Provisioning workqueue · {orders.length} order
-              {orders.length === 1 ? "" : "s"}
-            </p>
+        <section className="card a-rise mb-6 border-t-2 border-vz-red">
+          <div className="flex flex-wrap items-center gap-4 p-6">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-vz-red text-white">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2" />
+                <rect x="8" y="3" width="8" height="4" rx="1" />
+                <path d="M8 12h8M8 16h5" />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-vz-red">
+                Corvia OSS · Provisioning
+              </div>
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+                Order queue
+              </h1>
+              <p className="mt-1 max-w-xl text-sm text-slate-500">
+                Design and provision circuit orders — assign circuits, complete tasks,
+                and hand off to Activation.
+              </p>
+            </div>
+            <div className="ml-auto flex items-center gap-3">
+              <span className="hidden rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-500 sm:block">
+                <span className="font-semibold text-slate-900">{orders.length}</span> in
+                queue
+              </span>
+              <Link data-testid="new-order-btn" href="/new" className="btn btn-primary">
+                <span className="text-base leading-none">+</span> New order
+              </Link>
+            </div>
           </div>
-          <Link data-testid="new-order-btn" href="/new" className="btn btn-primary">
-            <span className="text-base leading-none">+</span> New order
-          </Link>
-        </div>
+        </section>
 
         <div className="mb-4 flex items-center gap-2">
           <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -116,8 +142,13 @@ function Queue() {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((o) => (
-                  <tr key={o.order_no} data-testid={`order-row-${o.order_no}`}>
+                {orders.map((o, i) => (
+                  <tr
+                    key={o.order_no}
+                    data-testid={`order-row-${o.order_no}`}
+                    className="a-row"
+                    style={{ ["--i" as string]: i } as React.CSSProperties}
+                  >
                     <td>
                       <Link
                         href={`/o/${o.order_no}`}

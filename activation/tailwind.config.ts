@@ -9,8 +9,9 @@ const config: Config = {
     extend: {
       colors: {
         vz: {
-          red: "#ee0000",
-          redDark: "#cd0000",
+          // Mapped to the per-app accent set in globals.css :root.
+          red: "var(--accent)",
+          redDark: "var(--accent-strong)",
           black: "#0b0b0c",
           gray: "#f4f5f7",
         },

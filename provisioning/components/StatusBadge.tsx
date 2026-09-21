@@ -25,6 +25,9 @@ const STYLES: Record<string, [string, string]> = {
   closed: ["bg-emerald-600/10 text-emerald-800 ring-emerald-300", "bg-emerald-600"],
 };
 
+// Statuses that represent active/in-progress work get a pulsing dot.
+const ACTIVE = new Set(["in_design", "handed_off", "ready_for_activation", "testing"]);
+
 // Badge exposes the raw status on data-status; label text is cosmetic.
 export default function StatusBadge({ status }: { status: string }) {
   const [pill, dot] = STYLES[status] ?? [
@@ -37,7 +40,9 @@ export default function StatusBadge({ status }: { status: string }) {
       data-status={status}
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${pill}`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${dot} ${ACTIVE.has(status) ? "pulse-dot" : ""}`}
+      />
       {LABELS[status] ?? status}
     </span>
   );

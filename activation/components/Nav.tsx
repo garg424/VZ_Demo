@@ -33,18 +33,20 @@ export default function Nav() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header className="a-slidedown sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="container-app flex h-16 items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/" aria-label={`${APP_NAME} home`} className="rounded-md hover:opacity-80">
+          <Link href="/" aria-label={`${APP_NAME} home`} className="logo-link rounded-md">
             <Logo />
           </Link>
           <span className="h-5 w-px bg-slate-200" />
-          <div className="leading-tight">
-            <div className="text-sm font-semibold text-slate-900">{APP_NAME}</div>
-            <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
+          <div className="flex items-center gap-2">
+            <span className="module-pill rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.08em]">
+              {APP_NAME}
+            </span>
+            <span className="hidden text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400 sm:inline">
               {APP_TAG}
-            </div>
+            </span>
           </div>
         </div>
 

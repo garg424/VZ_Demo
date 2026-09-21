@@ -49,20 +49,47 @@ function Queue() {
     <>
       <Nav />
       <main className="container-app py-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-              Activation queue
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Work orders handed off from provisioning · {rows.length} item
-              {rows.length === 1 ? "" : "s"}
-            </p>
+        <section className="card a-rise mb-6 border-t-2 border-vz-red">
+          <div className="flex flex-wrap items-center gap-4 p-6">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-vz-red text-white">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4.5 12a7.5 7.5 0 0 1 15 0" />
+                <path d="M8 12a4 4 0 0 1 8 0" />
+                <path d="M12 12v9" />
+                <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-vz-red">
+                Corvia OSS · Activation
+              </div>
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+                Activation queue
+              </h1>
+              <p className="mt-1 max-w-xl text-sm text-slate-500">
+                Pick up handed-off work orders, run acceptance tests, and activate
+                circuits into the network.
+              </p>
+            </div>
+            <div className="ml-auto flex items-center gap-3">
+              <span className="hidden rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-500 sm:block">
+                <span className="font-semibold text-slate-900">{rows.length}</span> in
+                queue
+              </span>
+              <button data-testid="reset-btn" onClick={reset} className="btn btn-secondary">
+                Reset demo data
+              </button>
+            </div>
           </div>
-          <button data-testid="reset-btn" onClick={reset} className="btn btn-secondary">
-            Reset demo data
-          </button>
-        </div>
+        </section>
 
         {toast && (
           <div
@@ -119,8 +146,13 @@ function Queue() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((o) => (
-                  <tr key={o.order_no} data-testid={`order-row-${o.order_no}`}>
+                {rows.map((o, i) => (
+                  <tr
+                    key={o.order_no}
+                    data-testid={`order-row-${o.order_no}`}
+                    className="a-row"
+                    style={{ ["--i" as string]: i } as React.CSSProperties}
+                  >
                     <td>
                       <Link
                         href={`/o/${o.order_no}`}

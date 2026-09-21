@@ -90,7 +90,7 @@ function Detail({ orderNo }: { orderNo: string }) {
   return (
     <>
       <Nav />
-      <main className="container-app py-8">
+      <main className="container-app a-fade py-8">
         <Link href="/" className="text-sm font-medium text-slate-500 hover:text-slate-800">
           ← Activation queue
         </Link>

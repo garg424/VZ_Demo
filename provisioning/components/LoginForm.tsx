@@ -48,35 +48,44 @@ export default function LoginForm({
     }
   }
 
+  const blurb =
+    appRole === "provisioning"
+      ? {
+          title: "Provision circuit orders",
+          body: "Capture orders, assign circuits and ports, then hand off to activation.",
+        }
+      : {
+          title: "Activate & test circuits",
+          body: "Pick up work orders, run acceptance tests, and place circuits in service.",
+        };
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Brand panel */}
       <div className="relative hidden overflow-hidden bg-vz-black lg:block">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(40rem 40rem at 20% 10%, rgba(238,0,0,0.35), transparent 55%), radial-gradient(30rem 30rem at 90% 90%, rgba(238,0,0,0.20), transparent 60%)",
-          }}
-        />
+        <div className="brand-panel-bg absolute inset-0" />
         <div className="relative flex h-full flex-col justify-between p-12 text-white">
-          <Logo wordmarkClassName="text-white" />
-          <div>
-            <h2 className="max-w-sm text-3xl font-semibold leading-tight">
-              Circuit provisioning &amp; activation
-            </h2>
-            <p className="mt-3 max-w-sm text-sm text-white/60">
-              Order-to-activation lifecycle across provisioning, activation, and
-              network inventory systems.
-            </p>
+          <div className="a-fade">
+            <Logo wordmarkClassName="text-white" />
           </div>
-          <div className="text-xs text-white/40">Internal demo environment</div>
+          <div className="a-rise">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/80">
+              {appName} console
+            </div>
+            <h2 className="max-w-sm text-4xl font-semibold leading-tight">
+              {blurb.title}
+            </h2>
+            <p className="mt-3 max-w-sm text-sm text-white/60">{blurb.body}</p>
+          </div>
+          <div className="text-xs text-white/40">
+            Corvia Telecom · internal demo environment
+          </div>
         </div>
       </div>
 
       {/* Form panel */}
       <div className="flex items-center justify-center px-6 py-16">
-        <div className="w-full max-w-sm">
+        <div className="a-rise w-full max-w-sm">
           <div className="mb-8 lg:hidden">
             <Logo />
           </div>

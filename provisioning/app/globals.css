@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Per-app accent. Provisioning = Corvia red. (Activation overrides these.) */
 :root {
   color-scheme: light;
+  --accent: #ee0000;
+  --accent-strong: #cd0000;
+  --accent-soft: #fee2e2;
+  --accent-rgb: 238 0 0;
 }
 
 html,
@@ -13,19 +18,56 @@ body {
 
 body {
   background:
-    radial-gradient(60rem 60rem at 110% -10%, rgba(238, 0, 0, 0.05), transparent 60%),
+    radial-gradient(60rem 60rem at 110% -10%, rgb(var(--accent-rgb) / 0.05), transparent 60%),
     #f4f5f7;
   color: #0b0b0c;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Test-target rule: no animations/transitions that could race a test runner. */
-*,
-*::before,
-*::after {
-  animation: none !important;
-  transition: none !important;
+/* ---- Motion ---------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@layer utilities {
+  .a-fade { animation: fadeIn 0.3s ease both; }
+  .a-rise { animation: rise 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+  .a-slidedown { animation: slideDown 0.35s ease both; }
+  .a-scale { animation: scaleIn 0.28s ease both; }
+  /* Staggered list rows: set style={{ ['--i']: index }} */
+  .a-row {
+    animation: rise 0.32s ease both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+  }
+  .pulse-dot { animation: pulseDot 1.8s ease-in-out infinite; }
+}
+
+/* Accessibility + test-stability valve: reduced motion disables everything. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 @layer components {
@@ -36,17 +78,35 @@ body {
   /* Surfaces */
   .card {
     @apply rounded-xl border border-slate-200 bg-white shadow-card;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
   .section-title {
     @apply mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500;
   }
 
+  /* Per-app coloured chips / panels */
+  .module-pill {
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+  }
+  .brand-panel-bg {
+    background:
+      radial-gradient(40rem 40rem at 20% 10%, rgb(var(--accent-rgb) / 0.4), transparent 55%),
+      radial-gradient(30rem 30rem at 90% 95%, rgb(var(--accent-rgb) / 0.22), transparent 60%);
+  }
+
   /* Buttons */
   .btn {
     @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold leading-none;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease,
+      opacity 0.15s ease;
+  }
+  .btn:active {
+    transform: translateY(1px) scale(0.99);
   }
   .btn:focus-visible {
-    @apply outline-none ring-2 ring-red-200;
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-soft);
   }
   .btn:disabled {
     @apply cursor-not-allowed opacity-40;
@@ -77,10 +137,13 @@ body {
   .input,
   .select {
     @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
   .input:focus,
   .select:focus {
-    @apply border-vz-red outline-none ring-2 ring-red-100;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    outline: none;
   }
 
   /* Key / value description lists */
@@ -107,11 +170,23 @@ body {
   .table tbody tr:last-child td {
     @apply border-b-0;
   }
+  .table tbody tr {
+    transition: background-color 0.12s ease;
+  }
   .table tbody tr:hover {
     @apply bg-slate-50/70;
   }
 
   .mono {
     @apply font-mono text-[0.9em] tracking-tight;
+  }
+
+  /* Clickable logo */
+  .logo-link {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .logo-link:hover {
+    transform: scale(1.03);
+    opacity: 0.9;
   }
 }
