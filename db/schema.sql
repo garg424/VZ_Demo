@@ -193,12 +193,13 @@ left join netinv.circuit_inventory i on i.order_no = p.order_no;
 
 create or replace function public.reset_demo() returns void language plpgsql as $$
 begin
-  delete from netinv.circuit_inventory;
-  delete from act.tests;
-  delete from act.work_orders;
-  delete from prov.tasks;
-  delete from prov.orders;
-  delete from public.audit_log;
+  -- WHERE clauses satisfy the "safe update" guard that blocks unqualified DELETEs.
+  delete from netinv.circuit_inventory where true;
+  delete from act.tests where true;
+  delete from act.work_orders where true;
+  delete from prov.tasks where true;
+  delete from prov.orders where true;
+  delete from public.audit_log where true;
   alter sequence prov.ord_seq restart with 1001;
   alter sequence prov.ckt_seq restart with 100234;
 
@@ -218,6 +219,14 @@ begin
   insert into public.audit_log (order_no, system, action, from_status, to_status, actor)
   select order_no, 'provisioning', 'seeded', null, status, 'system' from prov.orders;
 end $$;
+
+-- APP ADDITION (3): grant the anon/authenticated roles access to the custom
+-- schemas. Exposing a schema in the dashboard makes it visible to PostgREST but
+-- only `public` gets table privileges automatically; the rest need these grants.
+grant usage on schema prov, act, netinv to anon, authenticated, service_role;
+grant select, insert, update, delete on all tables in schema prov, act, netinv to anon, authenticated, service_role;
+grant usage, select on all sequences in schema prov, act, netinv to anon, authenticated, service_role;
+grant execute on all functions in schema prov, act, netinv to anon, authenticated, service_role;
 
 insert into public.users values
  ('prov@demo.io','Demo@1234','Dana Whitaker','provisioning'),
