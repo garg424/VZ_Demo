@@ -17,8 +17,9 @@ Validated end-to-end against the live deployment on 2026-09-21.
 
 1. **Wake the DB** — Supabase free tier sleeps after 7 idle days. Open either app
    and sign in; if the queue loads, the DB is awake.
-2. **Reset to a clean seed** — in Activation, click **Reset demo data** (top right),
-   or `POST https://vz-demo-activation.vercel.app/api/demo/reset`. Queue should show
+2. **Reset to a clean seed** — the reset button is hidden (see *Reset & recovery*
+   below) so demo attendees can't wipe the data. Trigger the hidden control, or
+   `POST https://vz-demo-activation.vercel.app/api/demo/reset`. Queue should show
    ORD-1001/1002/1003 in Provisioning and an empty Activation queue.
 3. **Two browser windows side by side** — left = Provisioning, right = Activation.
    Use separate windows (or one normal + one incognito): login state is per-app, and
@@ -156,8 +157,15 @@ pass all tests, **Activate**, **Close**. Now the inventory row exists.
 
 ## Reset & recovery
 
-- **Reset** between runs: Activation **Reset demo data** button, or
-  `POST https://vz-demo-activation.vercel.app/api/demo/reset`, or `select public.reset_demo();`.
+- **Reset** between runs (the button is hidden so attendees can't reset):
+  - **Easter egg** — on the Activation queue, click the hero icon (the indigo
+    signal tile, top-left of the banner) **5 times within ~3 seconds**. A
+    "Reset unlocked" toast appears and the **Reset demo data** button shows up.
+  - **API** (for scripts): `POST https://vz-demo-activation.vercel.app/api/demo/reset`.
+  - **SQL**: `select public.reset_demo();` over the session pooler.
+  - Note: this hides the control from casual users; it is not access control —
+    the repo is public and the API is unauthenticated. For a truly private reset,
+    gate `/api/demo/reset` with a server-side secret (Vercel env var).
 - If a screen looks stale, hard-refresh — reads are live (no-store), so a refresh
   always reflects the DB.
 - Order numbers restart at ORD-1004 after each reset (seeds are 1001–1003).

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import RequireAuth from "@/components/RequireAuth";
@@ -25,6 +25,22 @@ function Queue() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState("");
+
+  // Easter egg: 5 quick clicks on the hero icon unlock the reset control.
+  // There is no visible "Reset demo data" button until this is triggered, so
+  // casual demo users can't wipe the data mid-demo.
+  const [resetUnlocked, setResetUnlocked] = useState(false);
+  const tapTimes = useRef<number[]>([]);
+  function tapSecret() {
+    const now = Date.now();
+    // Keep taps within a 3s rolling window; 5 of them unlock reset.
+    tapTimes.current = [...tapTimes.current.filter((t) => now - t < 3000), now];
+    if (tapTimes.current.length >= 5) {
+      tapTimes.current = [];
+      setResetUnlocked(true);
+      setToast("🔓 Reset unlocked");
+    }
+  }
 
   async function load() {
     setLoading(true);
@@ -51,7 +67,11 @@ function Queue() {
       <main className="container-app py-8">
         <section className="card a-rise mb-6 border-t-2 border-vz-red">
           <div className="flex flex-wrap items-center gap-4 p-6">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-vz-red text-white">
+            <div
+              onClick={tapSecret}
+              aria-hidden="true"
+              className="grid h-12 w-12 shrink-0 select-none place-items-center rounded-xl bg-vz-red text-white"
+            >
               <svg
                 viewBox="0 0 24 24"
                 className="h-6 w-6"
@@ -84,9 +104,11 @@ function Queue() {
                 <span className="font-semibold text-slate-900">{rows.length}</span> in
                 queue
               </span>
-              <button data-testid="reset-btn" onClick={reset} className="btn btn-secondary">
-                Reset demo data
-              </button>
+              {resetUnlocked && (
+                <button data-testid="reset-btn" onClick={reset} className="btn btn-secondary">
+                  Reset demo data
+                </button>
+              )}
             </div>
           </div>
         </section>
